@@ -1,6 +1,7 @@
 import { use, useEffect, useState } from "react";
 import ProductApi from "./services/api.js";
 import "./App.css";
+import productAPI from "./services/api.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -9,7 +10,7 @@ function App() {
     price: "",
     description: "",
   });
-  const [editng, setEditing] = useState(null);
+  const [editngId, setEditingId] = useState(null);
 
   // получить все продукты
 
@@ -25,6 +26,43 @@ function App() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // обработчик изменения формы
+  const handleChange = (e) =>
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+
+  // создать продкут
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    try {
+      await productAPI.createProduct(formData);
+      fetchProducts();
+      setFormData({
+        name: "",
+        price: "",
+        description: "",
+      });
+    } catch (error) {
+      console.log("Ошибка создания:", error);
+    }
+  };
+
+  // начать редактирование
+  const startEdit = (product) => {
+    startEditingId(product.id);
+    setFormData({
+      name: product.name,
+      price: product.price,
+      description: product.description,
+    });
+  };
+
+  // обновить продукт
+
+  // удалить
 
   return (
     <>
