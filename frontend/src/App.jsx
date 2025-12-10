@@ -10,7 +10,7 @@ function App() {
     price: "",
     description: "",
   });
-  const [editngId, setEditingId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
 
   // получить все продукты
 
@@ -61,18 +61,85 @@ function App() {
   };
 
   // обновить продукт
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await ProductApi.updateProduct(editingId, formData);
+      setEditingId(null);
+      setFormData({
+        name: "",
+        price: "",
+        description: "",
+      });
+    } catch (error) {
+      console.log("Ошибка обновления:", error);
+    }
+  };
 
   // удалить
+  const handleDelete = async (id) => {
+    if (window.confirm("Вы уверены, что хотите удалить этот продукт ?")) {
+      try {
+        await ProductApi.deleteProduct(id);
+        fetchProducts();
+      } catch (error) {
+        console.error("Ошибка удаления:", error);
+      }
+    }
+  };
+
+  // отмена редактирования
+  const cancelEdit = () => {
+    setEditingId(null);
+    setFormData({
+      name: "",
+      price: "",
+      description: "",
+    });
+  };
 
   return (
     <>
+      <form onSubmit={editingId ? handleUpdate : handleCreate} className="form">
+        <input
+          type="text"
+          name="name"
+          placeholder="Название"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="number"
+          name="price"
+          placeholder="Цена"
+          value={formData.price}
+          onChange={handleChange}
+          required
+          step="0.01"
+        />
+        <textarea
+          name="description"
+          placeholder="Описание"
+          value={formData.description}
+          onChange={handleChange}
+        />
+
+        <button type="submit">{editingId ? "Обновить" : "Создать"}</button>
+        {editingId && (
+          <button type="button" onClick={cancelEdit}>
+            Отмена
+          </button>
+        )}
+      </form>
+
       <div className="App">
         <h1>CRUD Products</h1>
       </div>
 
       <div className="product-list">
         {products.map((product) => (
-          <div className="product-card">
+          <div className="product-card" key={product.id}>
             <h3>{product.name}</h3>
             <p>Цена: ${product.price}</p>
             <p>{product.description}</p>
@@ -81,6 +148,11 @@ function App() {
                 Создан: {new Date(product.created_at).toLocaleDateString()}
               </small>
             </p>
+
+            <div className="actions">
+              <button onClick={() => startEdit(product)}>Редактировать</button>
+              <button onClick={() => handleDelete(product.id)}>Удалить</button>
+            </div>
           </div>
         ))}
       </div>
