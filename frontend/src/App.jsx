@@ -52,7 +52,7 @@ function App() {
 
   // начать редактирование
   const startEdit = (product) => {
-    startEditingId(product.id);
+    setEditingId(product.id);
     setFormData({
       name: product.name,
       price: product.price,
@@ -65,6 +65,7 @@ function App() {
     e.preventDefault();
     try {
       await ProductApi.updateProduct(editingId, formData);
+      fetchProducts();
       setEditingId(null);
       setFormData({
         name: "",
