@@ -100,7 +100,7 @@ function App() {
   };
 
   return (
-    <>
+    <div className="App">
       <form onSubmit={editingId ? handleUpdate : handleCreate} className="form">
         <input
           type="text"
@@ -124,7 +124,7 @@ function App() {
           placeholder="Описание"
           value={formData.description}
           onChange={handleChange}
-        />
+        ></textarea>
 
         <button type="submit">{editingId ? "Обновить" : "Создать"}</button>
         {editingId && (
@@ -157,7 +157,7 @@ function App() {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
